@@ -62,14 +62,6 @@ namespace Graphs
             }
         }
 
-        public void EditEdge(int from, int to, int newWeight)
-        {
-            if (from < _vertices && to < _vertices)
-            {
-                _adjacencyMatrix[from, to] = newWeight; // Изменяем вес ребра
-            }
-        }
-
         public void DeleteEdge(int from, int to)
         {
             if (from < _vertices && to < _vertices)
