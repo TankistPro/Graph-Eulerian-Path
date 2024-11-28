@@ -1,156 +1,126 @@
 ﻿
+using System.Xml.Linq;
 
 namespace Graphs
 {
     class _Graph
     {
-        private int[,] _adjacencyMatrix; // Матрица смежности
-        private string[] _labels; // Метки вершин
-        private int _vertices; // Количество вершин
+        private Dictionary<int, string> vertices; // Список вершин
+        private int[,] adjacencyMatrix; // Матрица смежности
+        private int vertexCount; // Количество вершин
 
-        public _Graph(int vertices)
+        public _Graph(int maxVertices)
         {
-            _vertices = vertices;
-            _adjacencyMatrix = new int[vertices, vertices];
-            _labels = new string[vertices];
+            vertices = new Dictionary<int, string>(maxVertices);
+            adjacencyMatrix = new int[maxVertices, maxVertices];
+            vertexCount = 0;
         }
 
-        public void AddVertex()
+        public int FIRST(string name)
         {
-            _labels.Append(String.Empty);
-            _vertices++;
-
-            // Расширяем матрицу смежности
-            int[,] newAdjacencyMatrix = new int[_vertices, _vertices];
-            for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
+            for (int i = 0; i < vertexCount; i++)
             {
-                for (int x = 0; x < _adjacencyMatrix.GetLength(1); x++)
-                {
-                    newAdjacencyMatrix[i, x] = _adjacencyMatrix[i, x];
-                }
-            }
-
-            _adjacencyMatrix = newAdjacencyMatrix;
-        }
-
-        public void AddEdge(int from, int to, int weight)
-        {
-            if (from < _vertices && to < _vertices)
-            {
-                _adjacencyMatrix[from, to] = 1; // Добавляем направленное ребро с весом
-            }
-        }
-
-        public void DeleteVertex(int vertex)
-        {
-            if (vertex < _vertices)
-            {
-                for (int i = 0; i < _vertices; i++)
-                {
-                    _adjacencyMatrix[vertex, i] = 0; // Удаляем все рёбра из удаляемой вершины
-                    _adjacencyMatrix[i, vertex] = 0; // Удаляем все рёбра к удаляемой вершине
-                }
-                _labels[vertex] = null; // Удаляем метку
-            }
-        }
-
-        public void EditVertex(int vertex, string newMark)
-        {
-            if (vertex < _vertices)
-            {
-                _labels[vertex] = newMark; // Изменяем метку вершины
-            }
-        }
-
-        public void DeleteEdge(int from, int to)
-        {
-            if (from < _vertices && to < _vertices)
-            {
-                _adjacencyMatrix[from, to] = 0; // Удаляем направленное ребро
-            }
-        }
-
-        public int First(int v)
-        {
-            for (int i = 0; i < _vertices; i++)
-            {
-                if (_adjacencyMatrix[v, i] > 0) // Если есть смежная вершина
+                if (adjacencyMatrix[indexOfName(name), i] != 0) // Если есть связь
                     return i;
             }
-            return -1; // Нулевая вершина если нет смежных вершин
+            return -1; // Нулевая вершина
         }
 
-        public int Next(int v, int i)
+        public int NEXT(string name, int i)
         {
-            for (int j = i + 1; j < _vertices; j++)
+            for (int j = i + 1; j < vertexCount; j++)
             {
-                if (_adjacencyMatrix[v, j] > 0) // Если есть смежная вершина после i
+                if (adjacencyMatrix[indexOfName(name), j] != 0) // Если есть связь
                     return j;
             }
-            return -1; // Нулевая вершина если нет следующей смежной вершины
+            return -1; // Нету следующей вершины
         }
 
-        public int Vertex(int v, int i)
+        public string VERTEX(int i)
         {
-            int count = 0;
-            for (int j = 0; j < _vertices; j++)
-            {
-                if (_adjacencyMatrix[v, j] > 0) // Если есть смежная вершина
-                {
-                    if (count == i) return j; // Возвращаем вершину с индексом i
-                    count++;
-                }
-            }
-            return -1; // Нулевая вершина если индекс выходит за пределы
+            if (i < vertexCount)
+                return vertices[i];
+            throw new IndexOutOfRangeException("Индекс выходит за пределы списка вершин.");
         }
 
-        public bool FindEulerianPath(int startVertex, out List<int> path)
+        public void ADD_V(string name)
         {
-            path = new List<int>();
-            bool[] visitedEdges = new bool[_vertices * _vertices]; // Массив для отслеживания посещённых рёбер
-            Stack<int> stack = new Stack<int>();
-            stack.Push(startVertex);
+            vertices.Add(vertexCount, name);
+            vertexCount++;
+        }
 
-            while (stack.Count > 0)
+        public void ADD_E(string v, string w)
+        {
+            var vertex1 = indexOfName(v);
+            var vertex2 = indexOfName(w);
+
+            if(vertex1 == -1 || vertex2 == -1)
             {
-                int currentVertex = stack.Peek();
-                bool foundEdge = false;
-
-                for (int i = 0; i < _vertices; i++)
-                {
-                    if (_adjacencyMatrix[currentVertex, i] > 0 && !visitedEdges[currentVertex * _vertices + i])
-                    {
-                        visitedEdges[currentVertex * _vertices + i] = true; // Отмечаем ребро как посещённое
-                        stack.Push(i);
-                        foundEdge = true;
-                        break; // Переходим к следующему узлу
-                    }
-                }
-
-                if (!foundEdge)
-                {
-                    path.Add(stack.Pop()); // Если рёбер больше нет, добавляем вершину в путь
-                }
+                throw new ArgumentException("[ADD_E] Вершины не существует.");
             }
 
-            return path.Count > 1 && !AreVerticesAdjacent(path[0], path[path.Count - 1]);
+            adjacencyMatrix[indexOfName(v), indexOfName(w)] = 1;
         }
 
-        private bool AreVerticesAdjacent(int v1, int v2)
+        public void DEL_V(string name)
         {
-            return _adjacencyMatrix[v1, v2] == 1 || _adjacencyMatrix[v2, v1] == 1;
-        }
+            int key = indexOfName(name); 
+            if (key == -1) throw new ArgumentException("[DEL_V] Вершина не найдена.");
 
-        public void Print()
-        {
-            for (int i = 0; i < _vertices; i++)
+            vertices.Remove(key);
+
+            for (int i = 0; i < vertexCount; i++)
             {
-                for (int x = 0; x < _vertices; x++)
+                adjacencyMatrix[key, i] = 0; // Удаляем все рёбра из удаляемой вершины
+                adjacencyMatrix[i, key] = 0; // Удаляем все рёбра к удаляемой вершине
+            }
+
+            vertexCount--;
+        }
+
+        public void DEL_E(string v, string w)
+        {
+            adjacencyMatrix[indexOfName(v), indexOfName(v)] = 0; // Удаляем дугу
+        }
+
+        public void EDIT_V(string oldName, string newName)
+        {
+            int key = indexOfName(oldName);
+            if (key == -1) throw new ArgumentException("[EDIT_V] Вершина не найдена.");
+
+            vertices[key] = newName;
+        }
+
+        //public void EDIT_E(int v, int w, int newWeight)
+        //{
+        //    if (adjacencyMatrix[v, w] == 0) throw new ArgumentException("Дуга не существует.");
+
+        //    adjacencyMatrix[v, w] = newWeight; // Изменяем вес дуги
+        //}
+
+        public void PrintAdjacencyMatrix()
+        {
+            Console.WriteLine("Матрица смежности: ");
+            for (int i = 0; i < adjacencyMatrix.GetLength(0); i++)
+            {
+                for (int x = 0; x < adjacencyMatrix.GetLength(1); x++)
                 {
-                    Console.Write(_adjacencyMatrix[i, x] + " ");
+                    Console.Write(adjacencyMatrix[i, x] + " ");
                 }
                 Console.WriteLine();
             }
+        }
+
+        private int indexOfName(string name)
+        {
+            var vertex = vertices.Where(x => x.Value == name);
+
+            if(vertex.Any())
+            {
+                return vertex.FirstOrDefault().Key;
+            }
+
+            return -1;
         }
     }
 }

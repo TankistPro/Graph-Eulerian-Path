@@ -8,26 +8,20 @@ namespace Graphs
         {
             _Graph graph = new _Graph(5);
 
-            graph.AddEdge(0, 1, 10);
-            graph.AddEdge(1, 4, 10);
-            graph.AddEdge(1, 2, 10);
-            graph.AddEdge(2, 3, 20);
+            graph.ADD_V("a");
+            graph.ADD_V("b");
+            graph.ADD_V("c");
+            graph.ADD_V("d");
+            graph.ADD_V("e");
 
-            graph.Print();
+            graph.ADD_E("a", "b");
+            graph.ADD_E("a", "c");
+            graph.ADD_E("b", "e");
+            graph.ADD_E("b", "d");
 
-            Console.WriteLine(graph.Next(2, 2));
+            Console.WriteLine(graph.VERTEX(0));
 
-            //List<int> eulerPath;
-
-            //if (graph.FindEulerianPath(0, out eulerPath))
-            //{
-            //    Console.WriteLine("Эйлеров путь найден:");
-            //    Console.WriteLine(string.Join(" -> ", eulerPath));
-            //}
-            //else
-            //{
-            //    Console.WriteLine("Эйлеров путь не существует.");
-            //}
+            graph.PrintAdjacencyMatrix();
         }
     }
 }
