@@ -1,7 +1,4 @@
-﻿
-using System.Xml.Linq;
-
-namespace Graphs
+﻿namespace Graphs
 {
     internal class _Graph
     {
@@ -104,7 +101,12 @@ namespace Graphs
             }
         }
 
-        private int indexOfName(string name)
+        private protected bool AreAdjacent(string startVertex, string endVertex)
+        {
+            return adjacencyMatrix[indexOfName(startVertex), indexOfName(endVertex)] != 0;
+        }
+
+        private protected int indexOfName(string name)
         {
             var vertex = vertices.Where(x => x.Value == name);
 

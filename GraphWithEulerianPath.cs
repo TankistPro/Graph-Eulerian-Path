@@ -4,7 +4,7 @@ namespace Graphs
     {
         public GraphWithEulerianPath (int maxVertices) : base (maxVertices) {}
 
-        public void FindPathThroughAllEdges()
+        public void GetEulerWay()
         {
             List<string> path = new List<string>();
             bool[,] visitedEdges = new bool[vertexCount, vertexCount];
@@ -14,7 +14,7 @@ namespace Graphs
             {
                 for (int endVertex = 0; endVertex < vertexCount; endVertex++)
                 {
-                    if (startVertex != endVertex && !AreAdjacent(startVertex, endVertex))
+                    if (startVertex != endVertex && !AreAdjacent(VERTEX(startVertex), VERTEX(endVertex)))
                     {
                         path.Clear(); // Очищаем путь перед новой попыткой
                         if (DFS(startVertex, endVertex, path, visitedEdges))
@@ -27,17 +27,12 @@ namespace Graphs
                 }
             }
 
-            Console.WriteLine("Путь не найден.");
-        }
-
-        private bool AreAdjacent(int v, int w)
-        {
-            return adjacencyMatrix[v, w] != 0;
+            Console.WriteLine("Путь, проходящий через все дуги, не найден.");
         }
 
         private bool DFS(int currentVertex, int endVertex, List<string> path, bool[,] visitedEdges)
         {
-            path.Add(vertices[currentVertex]);
+            path.Add(VERTEX(currentVertex));
 
             // Проверяем, достигли ли мы конечной вершины и прошли ли все дуги
             if (currentVertex == endVertex && AllEdgesVisited(visitedEdges))
@@ -45,7 +40,7 @@ namespace Graphs
 
             for (int nextVertex = 0; nextVertex < vertexCount; nextVertex++)
             {
-                if (adjacencyMatrix[currentVertex, nextVertex] != 0 && !visitedEdges[currentVertex, nextVertex])
+                if (AreAdjacent(VERTEX(currentVertex), VERTEX(nextVertex)) && !visitedEdges[currentVertex, nextVertex])
                 {
                     visitedEdges[currentVertex, nextVertex] = true; // Помечаем дугу как посещенную
 
