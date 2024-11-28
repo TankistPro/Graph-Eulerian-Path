@@ -3,11 +3,11 @@ using System.Xml.Linq;
 
 namespace Graphs
 {
-    class _Graph
+    internal class _Graph
     {
-        private Dictionary<int, string> vertices; // Список вершин
-        private int[,] adjacencyMatrix; // Матрица смежности
-        private int vertexCount; // Количество вершин
+        private protected Dictionary<int, string> vertices; // Список вершин
+        private protected int[,] adjacencyMatrix; // Матрица смежности
+        private protected int vertexCount; // Количество вершин
 
         public _Graph(int maxVertices)
         {
@@ -90,13 +90,6 @@ namespace Graphs
 
             vertices[key] = newName;
         }
-
-        //public void EDIT_E(int v, int w, int newWeight)
-        //{
-        //    if (adjacencyMatrix[v, w] == 0) throw new ArgumentException("Дуга не существует.");
-
-        //    adjacencyMatrix[v, w] = newWeight; // Изменяем вес дуги
-        //}
 
         public void PrintAdjacencyMatrix()
         {

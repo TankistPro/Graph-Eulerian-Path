@@ -6,7 +6,7 @@ namespace Graphs
     {
         static void Main(string[] args)
         {
-            _Graph graph = new _Graph(5);
+            GraphWithEulerianPath graph = new GraphWithEulerianPath(5);
 
             graph.ADD_V("a");
             graph.ADD_V("b");
@@ -15,13 +15,13 @@ namespace Graphs
             graph.ADD_V("e");
 
             graph.ADD_E("a", "b");
-            graph.ADD_E("a", "c");
-            graph.ADD_E("b", "e");
-            graph.ADD_E("b", "d");
-
-            Console.WriteLine(graph.VERTEX(0));
+            graph.ADD_E("b", "c");
+            graph.ADD_E("c", "d");
+            graph.ADD_E("d", "e");
 
             graph.PrintAdjacencyMatrix();
+
+            graph.FindPathThroughAllEdges();
         }
     }
 }
