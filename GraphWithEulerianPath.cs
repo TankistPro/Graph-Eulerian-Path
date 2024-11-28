@@ -10,14 +10,14 @@ namespace Graphs
             bool[,] visitedEdges = new bool[vertexCount, vertexCount];
 
             // Ищем путь начиная с каждой вершины
-            for (int startVertex = 0; startVertex < vertexCount; startVertex++)
+            foreach (var startVertex in vertices)
             {
-                for (int endVertex = 0; endVertex < vertexCount; endVertex++)
+                foreach (var endVertex in vertices)
                 {
-                    if (startVertex != endVertex && !AreAdjacent(VERTEX(startVertex), VERTEX(endVertex)))
+                    if (startVertex.Key != endVertex.Key && !AreAdjacent(VERTEX(startVertex.Key), VERTEX(endVertex.Key)))
                     {
                         path.Clear(); // Очищаем путь перед новой попыткой
-                        if (DFS(startVertex, endVertex, path, visitedEdges))
+                        if (DFS(startVertex.Value, endVertex.Value, path, visitedEdges))
                         {
                             Console.WriteLine("Найден путь через все дуги:");
                             Console.WriteLine(string.Join(" -> ", path));
@@ -30,24 +30,24 @@ namespace Graphs
             Console.WriteLine("Путь, проходящий через все дуги, не найден.");
         }
 
-        private bool DFS(int currentVertex, int endVertex, List<string> path, bool[,] visitedEdges)
+        private bool DFS(string currentVertex, string endVertex, List<string> path, bool[,] visitedEdges)
         {
-            path.Add(VERTEX(currentVertex));
+            path.Add(VERTEX(indexOfName(currentVertex)));
 
             // Проверяем, достигли ли мы конечной вершины и прошли ли все дуги
-            if (currentVertex == endVertex && AllEdgesVisited(visitedEdges))
+            if (indexOfName(currentVertex) == indexOfName(endVertex) && AllEdgesVisited(visitedEdges))
                 return true;
 
-            for (int nextVertex = 0; nextVertex < vertexCount; nextVertex++)
+            for (int nextVertex = FIRST(currentVertex); nextVertex > -1; nextVertex = NEXT(currentVertex, nextVertex + 1))
             {
-                if (AreAdjacent(VERTEX(currentVertex), VERTEX(nextVertex)) && !visitedEdges[currentVertex, nextVertex])
+                if (AreAdjacent(VERTEX(indexOfName(currentVertex)), VERTEX(nextVertex)) && !visitedEdges[indexOfName(currentVertex), nextVertex])
                 {
-                    visitedEdges[currentVertex, nextVertex] = true; // Помечаем дугу как посещенную
+                    visitedEdges[indexOfName(currentVertex), nextVertex] = true; // Помечаем дугу как посещенную
 
-                    if (DFS(nextVertex, endVertex, path, visitedEdges))
+                    if (DFS(VERTEX(nextVertex), endVertex, path, visitedEdges))
                         return true;
 
-                    visitedEdges[currentVertex, nextVertex] = false; // Откат
+                    visitedEdges[indexOfName(currentVertex), nextVertex] = false; // Откат
                 }
             }
 
